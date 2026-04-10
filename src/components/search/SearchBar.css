@@ -1,0 +1,30 @@
+.search-bar-wrap {
+  width: 100%;
+  max-width: 360px;
+  height: 56px;
+  background: #ffffff;
+  border-radius: 22px;
+  display: flex;
+  align-items: center;
+  padding: 0 18px;
+  gap: 12px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+}
+
+.search-bar-icon {
+  color: #4b5563;
+  font-size: 1.4rem;
+}
+
+.search-bar-wrap input {
+  border: none;
+  outline: none;
+  width: 100%;
+  background: transparent;
+  font-size: 1rem;
+  color: #111827;
+}
+
+.search-bar-wrap input::placeholder {
+  color: #9ca3af;
+}

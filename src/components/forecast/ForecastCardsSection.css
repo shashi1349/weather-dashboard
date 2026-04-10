@@ -1,0 +1,81 @@
+.forecast-section-ui {
+  background: #ffffff;
+  border-radius: 28px;
+  padding: 28px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.04);
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  width: 100%;
+  overflow: hidden;
+}
+
+.forecast-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.forecast-section-header h3 {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.forecast-header-actions {
+  font-size: 1.8rem;
+  color: #475569;
+  cursor: pointer;
+}
+
+.forecast-city-tabs {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.forecast-city-tabs button {
+  border: 1px solid #d6dbe4;
+  background: #f8fafc;
+  color: #475569;
+  border-radius: 999px;
+  padding: 12px 22px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.forecast-city-tabs button:hover {
+  background: #edf6ff;
+  border-color: #a7d8ff;
+}
+
+.forecast-city-tabs .active-tab {
+  background: #dceeff;
+  color: #2563eb;
+  border-color: transparent;
+}
+
+.forecast-scroll-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 8px;
+  scroll-behavior: smooth;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+
+
+
+
+.forecast-cards-scroll {
+  display: flex;
+  align-items: stretch;
+  gap: 18px;
+  min-width: max-content;
+  width: max-content;
+}

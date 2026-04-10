@@ -1,0 +1,65 @@
+.aqi-card-ui {
+  background: #ffffff;
+  border-radius: 28px;
+  padding: 24px;
+  min-height: 220px;
+  box-shadow: 0 14px 28px rgba(15, 23, 42, 0.05);
+}
+
+.aqi-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.aqi-card-header h3 {
+  font-size: 1.5rem;
+  color: #111827;
+}
+
+.aqi-main-value {
+  font-size: 4rem;
+  font-weight: 800;
+  color: #111827;
+  margin-bottom: 8px;
+}
+
+.aqi-label {
+  color: #6b7280;
+  font-size: 1rem;
+  margin-bottom: 20px;
+  font-weight: 600;
+}
+
+.aqi-bars {
+  display: flex;
+  gap: 10px;
+}
+
+.aqi-bar {
+  flex: 1;
+  height: 12px;
+  border-radius: 999px;
+  background: #e5e7eb;
+}
+
+.aqi-bar.active:nth-child(1) {
+  background: #22c55e;
+}
+
+.aqi-bar.active:nth-child(2) {
+  background: #84cc16;
+}
+
+.aqi-bar.active:nth-child(3) {
+  background: #facc15;
+}
+
+.aqi-bar.active:nth-child(4) {
+  background: #fb923c;
+}
+
+.aqi-bar.active:nth-child(5) {
+  background: #ef4444;
+}

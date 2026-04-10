@@ -1,0 +1,32 @@
+.alert-card-ui {
+  background: linear-gradient(135deg, #fff7ed, #fffbeb);
+  border-radius: 28px;
+  padding: 24px;
+  min-height: 220px;
+  box-shadow: 0 14px 28px rgba(15, 23, 42, 0.05);
+  border: 1px solid #fde68a;
+}
+
+.alert-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.alert-card-header h3 {
+  font-size: 1.5rem;
+  color: #111827;
+}
+
+.alert-card-ui h4 {
+  font-size: 1.6rem;
+  color: #92400e;
+  margin-bottom: 10px;
+}
+
+.alert-card-ui p {
+  color: #78350f;
+  font-size: 1rem;
+  line-height: 1.6;
+}

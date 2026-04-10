@@ -1,0 +1,34 @@
+.mini-stat-card-ui {
+  background: #ffffff;
+  border-radius: 26px;
+  padding: 20px;
+  min-height: 170px;
+  box-shadow: 0 14px 28px rgba(15, 23, 42, 0.05);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.mini-stat-icon-box {
+  font-size: 1.8rem;
+  margin-bottom: 12px;
+}
+
+.mini-stat-title-ui {
+  color: #4b5563;
+  font-size: 1rem;
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+.mini-stat-card-ui h4 {
+  font-size: 2rem;
+  color: #111827;
+  margin-bottom: 8px;
+  font-weight: 700;
+}
+
+.mini-stat-subtitle-ui {
+  color: #6b7280;
+  font-size: 0.95rem;
+}

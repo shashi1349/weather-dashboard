@@ -1,0 +1,59 @@
+.forecast-day-card-ui {
+  min-width: 120px;
+  background: #f3f6fb;
+  border-radius: 24px;
+  padding: 18px 14px;
+  text-align: center;
+  transition: 0.2s ease;
+  border: 2px solid transparent;
+}
+
+.forecast-day-card-ui:hover {
+  transform: translateY(-3px);
+}
+
+.forecast-day-card-ui:first-child {
+  border-color: #7dd3fc;
+  background: #f8fbff;
+}
+
+.forecast-day-title {
+  font-size: 1rem;
+  color: #6b7280;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.forecast-day-date {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 8px;
+}
+
+.forecast-day-icon {
+  width: 58px;
+  height: 58px;
+  margin-bottom: 8px;
+}
+
+.forecast-day-card-ui h4 {
+  font-size: 1.8rem;
+  color: #111827;
+  margin-bottom: 6px;
+}
+
+.forecast-day-condition {
+  color: #6b7280;
+  font-size: 0.95rem;
+}
+.forecast-weather-emoji {
+  font-size: 2.4rem;
+  margin-bottom: 10px;
+}
+
+.forecast-day-min {
+  color: #9ca3af;
+  font-size: 0.9rem;
+  margin-top: 6px;
+}

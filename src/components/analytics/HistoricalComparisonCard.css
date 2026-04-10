@@ -1,0 +1,67 @@
+.historical-card-ui {
+  background: #ffffff;
+  border-radius: 28px;
+  padding: 24px;
+  min-height: 320px;
+  box-shadow: 0 14px 28px rgba(15, 23, 42, 0.05);
+}
+
+.historical-header-ui {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.historical-header-ui h3 {
+  font-size: 1.5rem;
+  color: #111827;
+}
+
+.historical-grid-ui {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  margin-bottom: 20px;
+}
+
+.historical-box-ui {
+  background: #f3f6fb;
+  border-radius: 22px;
+  padding: 18px;
+}
+
+.historical-box-ui p {
+  color: #6b7280;
+  margin-bottom: 8px;
+  font-size: 0.95rem;
+}
+
+.historical-box-ui h4 {
+  font-size: 2rem;
+  color: #111827;
+}
+
+.historical-summary-ui {
+  color: #4b5563;
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+.warmer {
+  color: #ef4444;
+}
+
+.cooler {
+  color: #3b82f6;
+}
+
+.normal {
+  color: #10b981;
+}
+
+@media (max-width: 768px) {
+  .historical-grid-ui {
+    grid-template-columns: 1fr;
+  }
+}

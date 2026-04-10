@@ -1,0 +1,23 @@
+.chart-card-ui {
+  background: #ffffff;
+  border-radius: 28px;
+  padding: 24px;
+  min-height: 360px;
+  box-shadow: 0 14px 28px rgba(15, 23, 42, 0.05);
+}
+
+.chart-card-header-ui {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.chart-card-header-ui h3 {
+  font-size: 1.5rem;
+  color: #111827;
+}
+
+.chart-box-ui {
+  height: 350px;
+}
