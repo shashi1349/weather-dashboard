@@ -282,8 +282,12 @@ const precipitationChartRef = useRef(null);
                         <button
                         className="favorite-city-btn"
                         onClick={() => {
+                          if (city === "Your Location") {
+                            handleUseCurrentLocation();
+                          } else {
                             fetchCityWeather(city);
-                            setShowFavoritesMenu(false);
+                          }
+                          setShowFavoritesMenu(false);
                         }}
                         >
                         {city}
