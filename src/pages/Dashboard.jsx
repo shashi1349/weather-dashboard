@@ -1,4 +1,4 @@
-import {useEffect, useRef, useState} from "react";
+import { useEffect, useRef, useState } from "react";
 import dayjs from "dayjs";
 
 import "./Dashboard.css";
@@ -15,9 +15,7 @@ import HourlyTempChart from "../components/charts/HourlyTempChart";
 import PrecipitationChart from "../components/charts/PrecipitationChart";
 import SevenDayTrendChart from "../components/charts/SevenDayTrendChart";
 import HistoricalComparisonCard from "../components/analytics/HistoricalComparisonCard";
-
 import LocationButton from "../components/location/LocationButton";
-
 
 import {
   getCoordinates,
@@ -25,7 +23,7 @@ import {
   getAQIData,
 } from "../services/weatherApi";
 
-import {generateCustomAlerts} from "../utils/EmojiHelpers";
+import { generateCustomAlerts } from "../utils/EmojiHelpers";
 import {
   CACHE_TTL,
   getCache,
@@ -34,6 +32,7 @@ import {
   buildCityCacheKey,
   buildCoordsCacheKey,
 } from "../services/cacheService";
+
 import {
   getFavorites,
   addFavorite,
@@ -49,64 +48,122 @@ function Dashboard() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [lastUpdated, setLastUpdated] = useState("");
-    const hourlyChartRef = useRef(null);
-    const [showFavoritesMenu, setShowFavoritesMenu] = useState(false);
-const precipitationChartRef = useRef(null);
+
+  const hourlyChartRef = useRef(null);
+  const precipitationChartRef = useRef(null);
+  const [showFavoritesMenu, setShowFavoritesMenu] = useState(false);
+
   useEffect(() => {
     setFavorites(getFavorites());
     fetchCityWeather("Hyderabad");
   }, []);
 
-  const fetchCityWeather = async city => {
+  // 🔥 FIXED FUNCTION
+  const fetchCityWeather = async (city) => {
+    // ✅ Handle location properly
+    if (city === "Your Location") {
+      setError("");
+      handleUseCurrentLocation();
+      return;
+    }
+
     const weatherCityKey = buildCityCacheKey("weather", city);
     const aqiCityKey = buildCityCacheKey("aqi", city);
 
     try {
-        setLoading(true);
-        setError("");
+      setLoading(true);
+      setError("");
 
-        const cachedWeather = getCache(weatherCityKey);
-        const cachedAqi = getCache(aqiCityKey);
+      const cachedWeather = getCache(weatherCityKey);
+      const cachedAqi = getCache(aqiCityKey);
 
-        if (cachedWeather && cachedAqi) {
+      if (cachedWeather && cachedAqi) {
         setCityInfo(cachedWeather.cityInfo);
         setWeatherData(cachedWeather.weatherData);
         setAqiData(cachedAqi);
         setCustomAlerts(cachedWeather.customAlerts);
         setLastUpdated(dayjs().format("DD MMM YYYY • hh:mm A"));
-        setLoading(false);
         return;
-        }
+      }
 
-        const coords = await getCoordinates(city);
+      const coords = await getCoordinates(city);
 
-        const weatherCoordsKey = buildCoordsCacheKey("weather", coords.lat, coords.lon);
-        const aqiCoordsKey = buildCoordsCacheKey("aqi", coords.lat, coords.lon);
-
-        const cachedWeatherByCoords = getCache(weatherCoordsKey);
-        const cachedAqiByCoords = getCache(aqiCoordsKey);
-
-        if (cachedWeatherByCoords && cachedAqiByCoords) {
-        setCityInfo(cachedWeatherByCoords.cityInfo);
-        setWeatherData(cachedWeatherByCoords.weatherData);
-        setAqiData(cachedAqiByCoords);
-        setCustomAlerts(cachedWeatherByCoords.customAlerts);
-        setLastUpdated(dayjs().format("DD MMM YYYY • hh:mm A"));
-        setLoading(false);
-        return;
-        }
-
-        const [weather, aqi] = await Promise.all([
+      const [weather, aqi] = await Promise.all([
         getWeatherBundle(coords.lat, coords.lon, coords.timezone),
         getAQIData(coords.lat, coords.lon, coords.timezone),
-        ]);
+      ]);
 
-        const cityInfoObj = {
+      const cityInfoObj = {
         name: coords.name,
         country: coords.country,
         lat: coords.lat,
         lon: coords.lon,
         timezone: coords.timezone,
+      };
+
+      const alerts = generateCustomAlerts(weather, aqi);
+
+      setCityInfo(cityInfoObj);
+      setWeatherData(weather);
+      setAqiData(aqi);
+      setCustomAlerts(alerts);
+      setLastUpdated(dayjs().format("DD MMM YYYY • hh:mm A"));
+
+      const payload = {
+        cityInfo: cityInfoObj,
+        weatherData: weather,
+        customAlerts: alerts,
+      };
+
+      setCache(weatherCityKey, payload, CACHE_TTL.WEATHER);
+      setCache(aqiCityKey, aqi, CACHE_TTL.AQI);
+    } catch (err) {
+      const stale = getStaleCache(weatherCityKey);
+
+      if (stale) {
+        setCityInfo(stale.cityInfo);
+        setWeatherData(stale.weatherData);
+        setCustomAlerts(stale.customAlerts);
+        setError("Showing cached data due to API issue.");
+      } else {
+        setError(err.message || "City not found");
+        setWeatherData(null);
+        setCityInfo(null);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAddFavorite = (city) => {
+    if (!city || city === "Your Location") return;
+    addFavorite(city);
+    setFavorites(getFavorites());
+  };
+
+  const handleRemoveFavorite = (city) => {
+    removeFavorite(city);
+    setFavorites(getFavorites());
+  };
+
+  const handleUseCurrentLocation = () => {
+    navigator.geolocation.getCurrentPosition(async (pos) => {
+      const { latitude, longitude } = pos.coords;
+
+      try {
+        setLoading(true);
+        setError("");
+
+        const [weather, aqi] = await Promise.all([
+          getWeatherBundle(latitude, longitude, "auto"),
+          getAQIData(latitude, longitude, "auto"),
+        ]);
+
+        const cityInfoObj = {
+          name: "Your Location",
+          lat: latitude,
+          lon: longitude,
+          timezone: weather.timezone,
         };
 
         const alerts = generateCustomAlerts(weather, aqi);
@@ -116,207 +173,79 @@ const precipitationChartRef = useRef(null);
         setAqiData(aqi);
         setCustomAlerts(alerts);
         setLastUpdated(dayjs().format("DD MMM YYYY • hh:mm A"));
-
-        const weatherPayload = {
-        cityInfo: cityInfoObj,
-        weatherData: weather,
-        customAlerts: alerts,
-        };
-
-        setCache(weatherCityKey, weatherPayload, CACHE_TTL.WEATHER);
-        setCache(weatherCoordsKey, weatherPayload, CACHE_TTL.WEATHER);
-        setCache(aqiCityKey, aqi, CACHE_TTL.AQI);
-        setCache(aqiCoordsKey, aqi, CACHE_TTL.AQI);
-    } catch (err) {
-        const staleWeather =
-        getStaleCache(weatherCityKey) || getStaleCache(buildCityCacheKey("weather", city));
-        const staleAqi =
-        getStaleCache(aqiCityKey) || getStaleCache(buildCityCacheKey("aqi", city));
-
-        if (staleWeather) {
-        setCityInfo(staleWeather.cityInfo);
-        setWeatherData(staleWeather.weatherData);
-        setAqiData(staleAqi || null);
-        setCustomAlerts(staleWeather.customAlerts || []);
-        setLastUpdated(dayjs().format("DD MMM YYYY • hh:mm A"));
-        setError("Showing cached data due to API/network issue.");
-        } else {
-        setError(err.message || "Something went wrong while fetching weather data");
-        setWeatherData(null);
-        setAqiData(null);
-        setCityInfo(null);
-        setCustomAlerts([]);
-        }
-    } finally {
+      } catch {
+        setError("Unable to fetch your location weather");
+      } finally {
         setLoading(false);
-    }
-    };
-
-  const handleAddFavorite = city => {
-    if (!city) return;
-    addFavorite(city);
-    setFavorites(getFavorites());
+      }
+    });
   };
-
-  const handleRemoveFavorite = city => {
-    removeFavorite(city);
-    setFavorites(getFavorites());
-  };
-
-  const handleUseCurrentLocation = () => {
-    if (!navigator.geolocation) {
-        setError("Geolocation is not supported in this browser.");
-        return;
-    }
-
-    navigator.geolocation.getCurrentPosition(
-        async position => {
-        const {latitude, longitude} = position.coords;
-
-        const weatherCoordsKey = buildCoordsCacheKey("weather", latitude, longitude);
-        const aqiCoordsKey = buildCoordsCacheKey("aqi", latitude, longitude);
-
-        try {
-            setLoading(true);
-            setError("");
-
-            const cachedWeather = getCache(weatherCoordsKey);
-            const cachedAqi = getCache(aqiCoordsKey);
-
-            if (cachedWeather && cachedAqi) {
-            setCityInfo(cachedWeather.cityInfo);
-            setWeatherData(cachedWeather.weatherData);
-            setAqiData(cachedAqi);
-            setCustomAlerts(cachedWeather.customAlerts);
-            setLastUpdated(dayjs().format("DD MMM YYYY • hh:mm A"));
-            setLoading(false);
-            return;
-            }
-
-            const [weather, aqi] = await Promise.all([
-            getWeatherBundle(latitude, longitude, "auto"),
-            getAQIData(latitude, longitude, "auto"),
-            ]);
-
-            const cityInfoObj = {
-            name: "Your Location",
-            country: "",
-            lat: latitude,
-            lon: longitude,
-            timezone: weather.timezone,
-            };
-
-            const alerts = generateCustomAlerts(weather, aqi);
-
-            setCityInfo(cityInfoObj);
-            setWeatherData(weather);
-            setAqiData(aqi);
-            setCustomAlerts(alerts);
-            setLastUpdated(dayjs().format("DD MMM YYYY • hh:mm A"));
-
-            const weatherPayload = {
-            cityInfo: cityInfoObj,
-            weatherData: weather,
-            customAlerts: alerts,
-            };
-
-            setCache(weatherCoordsKey, weatherPayload, CACHE_TTL.WEATHER);
-            setCache(aqiCoordsKey, aqi, CACHE_TTL.AQI);
-        } catch (err) {
-            const staleWeather = getStaleCache(weatherCoordsKey);
-            const staleAqi = getStaleCache(aqiCoordsKey);
-
-            if (staleWeather) {
-            setCityInfo(staleWeather.cityInfo);
-            setWeatherData(staleWeather.weatherData);
-            setAqiData(staleAqi || null);
-            setCustomAlerts(staleWeather.customAlerts || []);
-            setLastUpdated(dayjs().format("DD MMM YYYY • hh:mm A"));
-            setError("Showing cached location data due to API/network issue.");
-            } else {
-            setError("Unable to fetch weather for your location.");
-            }
-        } finally {
-            setLoading(false);
-        }
-        },
-        () => {
-        setError("Location permission denied.");
-        }
-    );
-    };
 
   return (
     <div className="dashboard-page">
+      {/* 🔥 TOPBAR */}
       <div className="dashboard-topbar">
         <SearchBar onSearch={fetchCityWeather} />
 
         <div className="dashboard-top-actions">
-            <LocationButton onUseLocation={handleUseCurrentLocation} />
+          <LocationButton onUseLocation={handleUseCurrentLocation} />
 
-            <button
-                className="favorites-toggle-btn"
-                onClick={() => setShowFavoritesMenu(prev => !prev)}
-            >
-                ⭐ Favorites
-            </button>
+          <button
+            className="favorites-toggle-btn"
+            onClick={() => setShowFavoritesMenu((prev) => !prev)}
+          >
+            ⭐ Favorites
+          </button>
 
-            <button
-                className="add-favorite-btn"
-                onClick={() => handleAddFavorite(cityInfo?.name)}
-            >
-                + Add to Favorites
-            </button>
+          <button
+            className="add-favorite-btn"
+            onClick={() => handleAddFavorite(cityInfo?.name)}
+          >
+            + Add to Favorites
+          </button>
 
+          {showFavoritesMenu && (
+            <div className="favorites-dropdown-menu">
+              <h4>Your Favorites</h4>
 
+              {favorites.length === 0 ? (
+                <p>No favorites yet</p>
+              ) : (
+                favorites.map((city, index) => (
+                  <div key={index} className="favorite-dropdown-item">
+                    <button
+                      onClick={() => {
+                        if (city === "Your Location") {
+                          handleUseCurrentLocation();
+                        } else {
+                          fetchCityWeather(city);
+                        }
+                        setShowFavoritesMenu(false);
+                      }}
+                    >
+                      {city}
+                    </button>
 
-            {showFavoritesMenu && (
-                <div className="favorites-dropdown-menu">
-                <h4>Your Favorites</h4>
-
-                {favorites.length === 0 ? (
-                    <p className="favorites-empty-text">No favorite cities added yet.</p>
-                ) : (
-                    favorites.map((city, index) => (
-                    <div key={index} className="favorite-dropdown-item">
-                        <button
-                        className="favorite-city-btn"
-                        onClick={() => {
-                          if (city === "Your Location") {
-                            handleUseCurrentLocation();
-                          } else {
-                            fetchCityWeather(city);
-                          }
-                          setShowFavoritesMenu(false);
-                        }}
-                        >
-                        {city}
-                        </button>
-
-                        <button
-                        className="remove-favorite-btn"
-                        onClick={() => handleRemoveFavorite(city)}
-                        >
-                        ✕
-                        </button>
-                    </div>
-                    ))
-                )}
-                </div>
-            )}
+                    <button onClick={() => handleRemoveFavorite(city)}>
+                      ✕
+                    </button>
+                  </div>
+                ))
+              )}
             </div>
+          )}
+        </div>
       </div>
 
+      {/* 🔥 TITLE */}
       <div className="dashboard-title-row">
         <div>
           <h1>Today, {dayjs().format("dddd")}</h1>
           <p>{dayjs().format("DD MMM YYYY • hh:mm A")}</p>
           <span className="last-updated-badge">
-            Last Updated: {lastUpdated || dayjs().format("hh:mm A")}
+            Last Updated: {lastUpdated}
           </span>
         </div>
-
-
       </div>
 
       {loading && <Loader />}
@@ -327,71 +256,34 @@ const precipitationChartRef = useRef(null);
           <div className="dashboard-hero-grid">
             <CurrentWeatherCard
               cityName={cityInfo.name}
-              country={cityInfo.country}
               weatherData={weatherData}
             />
 
             <ForecastCardsSection
-                weatherData={weatherData}
-                onScrollToHourly={() =>
-                    hourlyChartRef.current?.scrollIntoView({behavior: "smooth", block: "start"})
-                }
-                onScrollToPrecipitation={() =>
-                    precipitationChartRef.current?.scrollIntoView({behavior: "smooth", block: "start"})
-                }
-                />
+              weatherData={weatherData}
+              onScrollToHourly={() =>
+                hourlyChartRef.current?.scrollIntoView({ behavior: "smooth" })
+              }
+              onScrollToPrecipitation={() =>
+                precipitationChartRef.current?.scrollIntoView({
+                  behavior: "smooth",
+                })
+              }
+            />
           </div>
 
-          <div className="dashboard-note">
-            <p>
-              Weather data loaded for <strong>{cityInfo.name}{cityInfo.country ? `, ${cityInfo.country}` : ""}</strong>
-            </p>
-          </div>
-
-          
-
+          {/* 🔥 STATS */}
           <div className="dashboard-row-two">
             <div className="mini-stats-grid">
               <MiniStatCard
-                title="Sunrise"
-                value={dayjs(weatherData.daily.sunrise[0]).format("hh:mm A")}
-                subtitle="Sunrise time"
-                icon="🌅"
-              />
-
-              <MiniStatCard
-                title="Sunset"
-                value={dayjs(weatherData.daily.sunset[0]).format("hh:mm A")}
-                subtitle="Sunset time"
-                icon="🌇"
-              />
-
-              <MiniStatCard
-                title="Feels Like"
-                value={`${Math.round(weatherData.current.apparent_temperature)}°`}
-                subtitle="Apparent temperature"
-                icon="🌡️"
-              />
-
-              <MiniStatCard
-                title="Wind Status"
-                value={`${weatherData.current.wind_speed_10m} km/h`}
-                subtitle="Current wind"
-                icon="💨"
-              />
-
-              <MiniStatCard
-                title="Visibility"
-                value={`${(weatherData.hourly.visibility[0] / 1000).toFixed(1)} km`}
-                subtitle="Visibility range"
-                icon="👁️"
-              />
-
-              <MiniStatCard
                 title="Humidity"
                 value={`${weatherData.current.relative_humidity_2m}%`}
-                subtitle="Humidity level"
                 icon="💧"
+              />
+              <MiniStatCard
+                title="Wind"
+                value={`${weatherData.current.wind_speed_10m} km/h`}
+                icon="💨"
               />
             </div>
 
@@ -401,28 +293,25 @@ const precipitationChartRef = useRef(null);
             </div>
           </div>
 
+          {/* 🔥 CHARTS */}
           <div className="dashboard-bottom-section">
-            <div className="dashboard-full-chart-row" ref={hourlyChartRef}>
-                <HourlyTempChart weatherData={weatherData} />
+            <div ref={hourlyChartRef}>
+              <HourlyTempChart weatherData={weatherData} />
             </div>
 
-            <div className="dashboard-full-chart-row" ref={precipitationChartRef}>
-                <PrecipitationChart weatherData={weatherData} />
+            <div ref={precipitationChartRef}>
+              <PrecipitationChart weatherData={weatherData} />
             </div>
 
-            <div className="dashboard-full-chart-row">
-                <SevenDayTrendChart weatherData={weatherData} />
-            </div>
+            <SevenDayTrendChart weatherData={weatherData} />
 
-            <div className="dashboard-history-row">
-                <HistoricalComparisonCard
-                currentTemp={weatherData.current.temperature_2m}
-                lat={cityInfo.lat}
-                lon={cityInfo.lon}
-                timezone={cityInfo.timezone}
-                />
-            </div>
-            </div>
+            <HistoricalComparisonCard
+              currentTemp={weatherData.current.temperature_2m}
+              lat={cityInfo.lat}
+              lon={cityInfo.lon}
+              timezone={cityInfo.timezone}
+            />
+          </div>
         </>
       )}
     </div>
