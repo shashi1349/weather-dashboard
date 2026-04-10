@@ -1,70 +1,174 @@
-# Getting Started with Create React App
+# 🌦️ Real-Time Weather Dashboard
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## 📌 Project Overview
+The Real-Time Weather Dashboard is a modern React-based web application that provides live weather updates, hourly and daily forecasts, air quality insights, custom alerts, and historical comparisons.
 
-## Available Scripts
+This project simulates an industry-level weather dashboard with focus on performance, reliability, and user experience.
 
-In the project directory, you can run:
+---
 
-### `npm start`
+## 🎯 Objective
+To build a live dashboard showing:
+- Current weather conditions  
+- Hourly (48-hour) forecasts  
+- Daily (14-day) forecasts  
+- Alerts for extreme conditions  
+- Historical comparison using past 5-year data  
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+---
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## 🚀 Key Features
 
-### `npm test`
+### 🌍 Weather Information
+- Real-time temperature, humidity, and wind speed  
+- Air Quality Index (AQI)  
+- Feels-like temperature  
+- Visibility, sunrise, and sunset  
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### ⏱️ Forecasting
+- 48-hour hourly forecast  
+- 14-day daily forecast  
+- Scrollable forecast cards  
 
-### `npm run build`
+### 📊 Interactive Charts
+- Hourly temperature chart (48h)  
+- Precipitation probability chart  
+- 7-day temperature trend (min, max, avg)  
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### ⚠️ Smart Alerts
+- Heat alerts  
+- Rain alerts  
+- Air quality alerts  
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### ⭐ User Features
+- City search  
+- Favorites system  
+- Current location support  
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### 📈 Historical Comparison
+- Compares today’s temperature with 5-year monthly average  
+- Uses Open-Meteo Archive API  
+- Displays difference and insights  
 
-### `npm run eject`
+---
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## 🛠️ Tech Stack
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Frontend: React (JSX)  
+Charts: Recharts  
+APIs: Open-Meteo (Forecast, Air Quality, Archive)  
+State Management: React Hooks  
+Storage: LocalStorage (Custom Cache System)  
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+---
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+## 🔌 APIs Used
 
-## Learn More
+### Open-Meteo Forecast API
+- Current weather  
+- Hourly (48 hours)  
+- Daily (14 days)  
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### Open-Meteo Air Quality API
+- AQI data  
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### Open-Meteo Archive API
+- Historical weather data  
 
-### Code Splitting
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## ⚡ API Robustness
+- Implemented retry mechanism for failed API calls  
+- Handles network/API failures gracefully  
+- Uses cached data as fallback  
+- Prevents UI crashes  
 
-### Analyzing the Bundle Size
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+## 🧠 Caching Strategy
 
-### Making a Progressive Web App
+### Cache Keys
+- weather_city_{city}  
+- weather_coords_{lat}_{lon}  
+- aqi_city_{city}  
+- historical_coords_{lat}_{lon}_{month}  
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+### TTL (Time-To-Live)
+- Weather → 15 minutes  
+- AQI → 30 minutes  
+- Historical → 24 hours  
 
-### Advanced Configuration
+### Offline Fallback
+- If API fails → stale cached data is used  
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+---
 
-### Deployment
+## 🔁 Rate Limit & Retry Strategy
+- Custom retry logic implemented  
+- Retries failed API calls automatically  
+- Reduces unnecessary API calls using caching  
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+---
 
-### `npm run build` fails to minify
+## 📊 Historical Data Method
+- Fetches data for the same month across last 5 years  
+- Calculates average monthly temperature  
+- Compares with today’s temperature  
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+---
+
+## 🧪 Testing
+
+### Cache Service
+- Cache storage and retrieval  
+- Expiration handling  
+- Stale fallback  
+
+### Helper Functions
+- Alert generation logic  
+
+Run tests:
+npm test
+
+---
+
+## ⚙️ Installation & Setup
+
+git clone https://github.com/shashi1349/weather-dashboard.git
+
+cd weather-dashboard
+
+npm install
+
+npm start
+
+---
+
+## 🌐 Live Demo
+https://weather-dashboard-ten-brown.vercel.app/
+
+---
+
+## 📦 Deployment
+- Deployed using Vercel  
+- Connected with GitHub repository  
+- Automatic builds on push  
+
+---
+
+
+## 🚀 Future Improvements
+- Browser notifications for alerts  
+- Dark mode  
+- Mobile optimization  
+- Advanced analytics  
+
+---
+
+## 👨‍💻 Author
+Pagilla ShashiKiran Reddy
+
+---
+
+## 📌 Conclusion
+This project demonstrates a production-ready weather dashboard with strong focus on performance, caching, and user experience.
